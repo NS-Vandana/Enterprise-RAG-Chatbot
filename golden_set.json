@@ -1,0 +1,52 @@
+[
+  {
+    "question": "What is the company's parental leave policy?",
+    "ground_truth": "Employees are entitled to 16 weeks of fully paid parental leave, applicable to both primary and secondary caregivers.",
+    "role": "hr"
+  },
+  {
+    "question": "How many days of annual leave do employees get?",
+    "ground_truth": "Full-time employees receive 24 days of paid annual leave per year, accrued monthly.",
+    "role": "hr"
+  },
+  {
+    "question": "What is the process for submitting an expense claim?",
+    "ground_truth": "Expense claims must be submitted within 30 days of the expense date via the HR portal with receipts attached. Claims over $500 require manager approval.",
+    "role": "hr"
+  },
+  {
+    "question": "What was our net revenue in Q3?",
+    "ground_truth": "Net revenue in Q3 was $4.2M, representing a 12% year-over-year increase driven by new enterprise contracts.",
+    "role": "finance"
+  },
+  {
+    "question": "What is our current cash runway?",
+    "ground_truth": "As of Q3, the company has 18 months of cash runway based on current burn rate of $800K per month.",
+    "role": "finance"
+  },
+  {
+    "question": "How much did we spend on digital marketing campaigns last quarter?",
+    "ground_truth": "Digital campaign spend in Q3 was $320K, with 60% allocated to paid search and 40% to social media advertising.",
+    "role": "marketing"
+  },
+  {
+    "question": "What was the customer acquisition cost last quarter?",
+    "ground_truth": "Customer acquisition cost (CAC) was $1,240 in Q3, down from $1,450 in Q2, reflecting improved campaign efficiency.",
+    "role": "marketing"
+  },
+  {
+    "question": "What is the total headcount?",
+    "ground_truth": "As of Q3, total headcount is 142 employees across 6 departments, with 28 open positions.",
+    "role": "c_suite"
+  },
+  {
+    "question": "What is our ARR?",
+    "ground_truth": "Annual Recurring Revenue (ARR) stands at $18.5M as of Q3, up from $14.2M at the same point last year.",
+    "role": "c_suite"
+  },
+  {
+    "question": "What is the remote work policy?",
+    "ground_truth": "Employees may work remotely up to 3 days per week. Full remote arrangements require VP approval and are reviewed quarterly.",
+    "role": "hr"
+  }
+]

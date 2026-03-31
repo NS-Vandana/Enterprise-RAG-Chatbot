@@ -1,0 +1,162 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-chatbot-backend
+  namespace: production
+  labels:
+    app: rag-chatbot-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rag-chatbot-backend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: rag-chatbot-backend
+    spec:
+      volumes:
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: rag-keyvault-secrets
+      containers:
+        - name: backend
+          image: yourcompanyacr.azurecr.io/rag-chatbot-backend:IMAGE_TAG
+          ports:
+            - containerPort: 8000
+          env:
+            - name: APP_ENV
+              value: "production"
+            - name: QDRANT_URL
+              value: "http://qdrant-svc:6333"
+            - name: AZURE_OPENAI_API_VERSION
+              value: "2024-02-01"
+            - name: EMBEDDING_DEPLOYMENT
+              value: "text-embedding-3-large"
+            - name: LANGCHAIN_TRACING_V2
+              value: "true"
+            - name: LANGCHAIN_PROJECT
+              value: "rag-enterprise-production"
+            - name: CORS_ORIGINS
+              value: "https://chat.yourcompany.com"
+            # Secrets from Key Vault
+            - name: GROQ_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secrets
+                  key: groq-api-key
+            - name: AZURE_OPENAI_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secrets
+                  key: azure-openai-endpoint
+            - name: AZURE_OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secrets
+                  key: azure-openai-api-key
+            - name: AZURE_TENANT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secrets
+                  key: azure-tenant-id
+            - name: AZURE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secrets
+                  key: azure-client-id
+            - name: QDRANT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secrets
+                  key: qdrant-api-key
+            - name: LANGCHAIN_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secrets
+                  key: langchain-api-key
+            - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secrets
+                  key: appinsights-connection-string
+          volumeMounts:
+            - name: secrets-store
+              mountPath: "/mnt/secrets"
+              readOnly: true
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "2"
+              memory: "4Gi"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-chatbot-frontend
+  namespace: production
+  labels:
+    app: rag-chatbot-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rag-chatbot-frontend
+  template:
+    metadata:
+      labels:
+        app: rag-chatbot-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: yourcompanyacr.azurecr.io/rag-chatbot-frontend:IMAGE_TAG
+          ports:
+            - containerPort: 80
+          env:
+            - name: VITE_API_URL
+              value: "https://api.yourcompany.com"
+            - name: VITE_AZURE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secrets
+                  key: azure-client-id
+            - name: VITE_AZURE_TENANT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secrets
+                  key: azure-tenant-id
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
